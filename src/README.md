@@ -26,3 +26,5 @@ Evaluate a learned handover decision policy against a conventional signal-based 
 - Comparison of handover reliability, interruption and throughput
 - Performance analysis and visualisations
 - Final technical report and demonstration
+
+Updated - 13/10/2026
