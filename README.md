@@ -49,10 +49,7 @@ Watch the team introduction video using the link below:
 
 🎥 **[Watch Team Introduction Video on YouTube](https://youtu.be/EAUCb3XLsi8?si=eo38xh0ZA4i9q48R)**
 
-[![Watch the video](https://img.youtube.com/vi/EAUCb3XLsi8/maxresdefault.jpg)](https://raw.githubusercontent.com/aiori-hackathon/A3-PS016-TC106/main/src/A3-PS016-TC106_Team_Gridlock_AIORI-3.mp4)
-
-<video src="./src/A3-PS016-TC106_Team_Gridlock_AIORI-3.mp4" width="100%" controls> Your browser does not support the video tag. </video>
-
+(If YouTube Link is not working, video is in src folder)
 ---
 
 ## Development Progress
