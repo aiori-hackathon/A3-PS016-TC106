@@ -33,8 +33,6 @@ This repository contains the source code, documentation, and other resources for
 
 **Category:** 6G & Future Networks
 
-The project focuses on the assigned problem statement under the 6G & Future Networks category. This repository will document the code, resources, and development progress associated with the project during the AIORI-3 Hackathon 2026.
-
 ---
 
 ## Project Resources
@@ -51,10 +49,6 @@ Watch the team introduction video using the link below:
 
 🎥 **[Watch Team Introduction Video on YouTube](https://youtu.be/EAUCb3XLsi8?si=eo38xh0ZA4i9q48R)**
 
-[![GRIDLOCK Team Introduction Video](https://img.youtube.com/vi/EAUCb3XLsi8/maxresdefault.jpg)](https://www.youtube.com/watch?v=EAUCb3XLsi8)
-
-Click the thumbnail above to watch the team introduction video on YouTube.
-
 <video src="./src/A3-PS016-TC106_Team_Gridlock_AIORI-3.mp4" width="100%" controls> Your browser does not support the video tag. </video>
 
 ---
@@ -62,10 +56,7 @@ Click the thumbnail above to watch the team introduction video on YouTube.
 ## Development Progress
 
 * **Completed Steps:** 1–7
-* **Current Status:** Steps 1 through 7 completed.
 * **Last Updated:** 13 October 2026
-
-Further code, documentation, and project resources will be maintained in this repository as development progresses during the AIORI-3 Hackathon 2026.
 
 ---
 
@@ -76,11 +67,3 @@ Further code, documentation, and project resources will be maintained in this re
 ---
 
 *Developed by Team GRIDLOCK for the AIORI-3 Hackathon 2026.*
-
----
-
-## Team Introduction Video
-
-### Watch on YouTube
-
-
