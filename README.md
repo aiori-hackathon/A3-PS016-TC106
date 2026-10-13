@@ -43,13 +43,19 @@ The project focuses on the assigned problem statement under the 6G & Future Netw
 
 The proposed project structure and presentation are available at the following link:
 
-📄 **[View Proposed Structure & Hackathon Presentation (PDF)](https://github.com/aiori-hackathon/A3-PS016-TC106/blob/main/Proposed-structure-hackathon.pdf)**
+📄 **[View Proposed Structure & Hackathon Presentation (PDF)](https://github.com/aiori-hackathon/A3-PS016-TC106/blob/main/A3-PS016-TC106_Team_Gridlock_AIORI-3.pdf)**
 
 ### 2. Team Introduction Video
 
 Watch the team introduction video using the link below:
 
 🎥 **[Watch Team Introduction Video on YouTube](https://youtu.be/EAUCb3XLsi8?si=eo38xh0ZA4i9q48R)**
+
+[![GRIDLOCK Team Introduction Video](https://img.youtube.com/vi/EAUCb3XLsi8/maxresdefault.jpg)](https://www.youtube.com/watch?v=EAUCb3XLsi8)
+
+Click the thumbnail above to watch the team introduction video on YouTube.
+
+<video src="./src/A3-PS016-TC106_Team_Gridlock_AIORI-3.mp4" width="100%" controls> Your browser does not support the video tag. </video>
 
 ---
 
@@ -77,23 +83,4 @@ Further code, documentation, and project resources will be maintained in this re
 
 ### Watch on YouTube
 
-[![GRIDLOCK Team Introduction Video](https://img.youtube.com/vi/EAUCb3XLsi8/maxresdefault.jpg)](https://www.youtube.com/watch?v=EAUCb3XLsi8)
 
-Click the thumbnail above to watch the team introduction video on YouTube.
-
-### Embedded Video (HTML)
-
-For platforms that support iframe embeds, use the following HTML:
-
-```html
-<iframe
-    width="560"
-    height="315"
-    src="https://www.youtube.com/embed/EAUCb3XLsi8?si=Iath7SwW2eKPnq1W"
-    title="GRIDLOCK Team Introduction Video"
-    frameborder="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-    referrerpolicy="strict-origin-when-cross-origin"
-    allowfullscreen>
-</iframe>
-```
