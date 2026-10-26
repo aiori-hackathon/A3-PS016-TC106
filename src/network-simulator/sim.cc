@@ -1,3 +1,7 @@
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+
+// Based on the example cttc-3gpp-channel-example from 5G LENA
+
 #include "sim.h"
 
 #include "ns3/applications-module.h"
