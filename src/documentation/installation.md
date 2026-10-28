@@ -11,7 +11,7 @@ docker compose build
 docker compose run --rm simulator
 ```
 
-The service starts an interactive shell in `/app`. Its compose bind mount maps host `handover-simulator/src` to `/app/handover-simulator/src`; source data and code otherwise come from the image.
+The service starts an interactive shell in `/app`. Compose mounts host `handover-simulator/src`, `scenario/`, `waypoints/`, and `traces/` at their matching paths in the container. Input changes and generated traces are therefore shared with the host project.
 
 ## Native route
 

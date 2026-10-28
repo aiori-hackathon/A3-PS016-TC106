@@ -18,3 +18,5 @@ The final command generates ns-3 traces and then runs the Python algorithms. Out
 In the container shell, use `python3 main.py --trace /path/to/run-folder` from `/app/handover-simulator/src`. Supply a compatible run folder containing `parameters.json` and per-UE/per-gNB CSVs. The scenario must also resolve correctly. This path still needs the Python runtime dependencies.
 
 For native setup, parameters, tests, or known limitations see [installation](installation.md), [configuration and inputs](configuration-inputs.md), [testing](testing.md), and [troubleshooting](troubleshooting.md).
+
+For sample YAML files, custom scenario/waypoint examples, seed repeats, and output interpretation, see the [complete usage guide](usage-guide.md).

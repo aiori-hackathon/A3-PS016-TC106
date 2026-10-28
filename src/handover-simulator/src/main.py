@@ -1,11 +1,20 @@
 #!/usr/bin/env python3
 # encoding: UTF-8
 
-import glob
 import os
+from pathlib import Path
+from datetime import datetime as _datetime
+from terminal_log import install_console_logging
+
+_project_trace_dir = Path(__file__).resolve().parent.parent / "traces"
+_run_started_at = _datetime.now().astimezone().isoformat(timespec="seconds")
+_console_log = install_console_logging(_project_trace_dir / "session.log")
+
+import glob
 from datetime import datetime
 import argparse
 import subprocess
+import shutil
 from concurrent.futures import ThreadPoolExecutor
 import multiprocessing
 import time
@@ -39,18 +48,22 @@ def build_simulation():
         ns3_sim_src_main_file,
     ]
     try:
-        process = subprocess.Popen(command, stdout=subprocess.PIPE)
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         logging.info(f"Building simulation")
     except subprocess.CalledProcessError as e:
         logging.error(f"Error building simulation")
         exit(-1)
     for line in process.stdout:
-        logging.info(line.rstrip())
+        if isinstance(line, bytes):
+            line = line.decode("utf-8", errors="replace")
+        print(line.rstrip(), flush=True)
     
 
 
     # wait for the simulation to finish
-    process.wait()
+    return_code = process.wait()
+    if return_code != 0:
+        raise RuntimeError(f"ns-3 build command failed with exit code {return_code}")
 
 
 import matplotlib.pyplot as plt
@@ -154,12 +167,17 @@ def run_simulation(index):
     print(command)
     time.sleep(10)
     try:
-        process = subprocess.Popen(command, stdout=subprocess.PIPE)
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         logging.info(f"Started NS3 simulation for gNodeB {selectedGnb}")
     except subprocess.CalledProcessError as e:
         logging.error(f"Error executing the command for gNodeB {selectedGnb}: {e}")
+    time_elapsed = "not reported"
     for line in process.stdout:
-        line_str = line.decode("utf-8").rstrip()
+        if isinstance(line, bytes):
+            line_str = line.decode("utf-8", errors="replace").rstrip()
+        else:
+            line_str = line.rstrip()
+        print(f"[ns-3 UE {ue} gNB {selectedGnb}] {line_str}", flush=True)
         if line_str.startswith("Time"):
             time_index = line_str.index("Time elapsed:") + len("Time elapsed:")
             end_time_index =  line_str.index("Progress:")
@@ -180,6 +198,7 @@ def run_simulation(index):
                     "t": time_elapsed,
                     "p": retCode
                     }
+        raise RuntimeError(f"ns-3 run failed for UE {ue}, gNB {selectedGnb}, exit code {retCode}")
 
     else:
         processes_state[ue][selectedGnb] = {
@@ -251,6 +270,10 @@ if __name__ == "__main__":
     parser.add_argument("--alpha", type=float, default=default_alpha, help="Alpha parameter for the scoring function")
     parser.add_argument("--beta", type=float, default=default_beta, help="Beta parameter for the scoring function")
     parser.add_argument("--wp", type=str,  default=default_wpFile, help="Path to the waypoints file")
+    parser.add_argument("--ddqnEpisodes", type=int, default=5,
+                        help="Maximum DDQN training episodes (default: 5).")
+    parser.add_argument("--ddqnTimeLimit", type=float, default=120.0,
+                        help="DDQN training time budget in seconds; 0 disables the time limit (default: 120).")
     args = parser.parse_args()
 
     # Load configuration from YAML file if provided
@@ -284,6 +307,7 @@ if __name__ == "__main__":
     packetSize = args.packetSize
     alpha = args.alpha
     beta = args.beta
+    wp = None
     if args.wp:
         wp = os.path.abspath(args.wp)
     
@@ -363,6 +387,8 @@ if __name__ == "__main__":
             #    print('Created {}'.format(traces_sim_folder))
             except:
                     print('Failed to create {}'.format(traces_sim_folder))
+        _console_log.add_log_target(Path(traces_sim_folder) / "run.log")
+        print(f"Run log: {Path(traces_sim_folder) / 'run.log'}", flush=True)
         build_simulation()
         
         executor = ThreadPoolExecutor(max_workers=cpu_threads_count)
@@ -426,6 +452,8 @@ if __name__ == "__main__":
             time.sleep(2)
             clear_terminal()
         executor.shutdown(wait=True)
+        for process_future in processes:
+            process_future.result()
         print("NS3 simulations finished")
         parameters = {
             "debug": args.logging,
@@ -444,6 +472,13 @@ if __name__ == "__main__":
             "timeToTrigger": args.ttt,
             "speed": args.speed,
             "trayectoryTime": args.trayectoryTime,
+            "alpha": args.alpha,
+            "beta": args.beta,
+            "HOInterval": args.HOInterval,
+            "ddqnEpisodes": args.ddqnEpisodes,
+            "ddqnTimeLimit": args.ddqnTimeLimit,
+            "scenarioFile": sc,
+            "waypointsFile": wp if wp is not None else None,
             
             
         }
@@ -451,6 +486,9 @@ if __name__ == "__main__":
             json.dump(parameters, jsonfile, indent=4)
     else:
         traces_sim_folder = args.trace
+        Path(traces_sim_folder).mkdir(parents=True, exist_ok=True)
+        _console_log.add_log_target(Path(traces_sim_folder) / "run.log")
+        print(f"Run log: {Path(traces_sim_folder) / 'run.log'}", flush=True)
         print(f"Trace file provided: {traces_sim_folder}")
         with open(traces_sim_folder+"/"+ PARAMETERS_FILE_NAME, 'r') as jsonfile:
             parameters = json.load(jsonfile)
@@ -471,6 +509,41 @@ if __name__ == "__main__":
         packetSize = parameters["packetSize"]
         
         #timeToTrigger = parameters["timeToTrigger"]
+
+    # Preserve the exact experiment settings and input files alongside the traces.
+    input_snapshot_dir = Path(traces_sim_folder) / "inputs"
+    input_snapshot_dir.mkdir(parents=True, exist_ok=True)
+    if os.path.isfile(sc):
+        shutil.copy2(sc, input_snapshot_dir / "scenario.txt")
+    if args.wp and os.path.isfile(os.path.abspath(args.wp)):
+        shutil.copy2(os.path.abspath(args.wp), input_snapshot_dir / "waypoints.txt")
+    if args.config and os.path.isfile(args.config):
+        shutil.copy2(args.config, input_snapshot_dir / "configuration.yaml")
+    experiment_manifest = {
+        "application": "HandoverLab 5G",
+        "started_at": _run_started_at or datetime.now().astimezone().isoformat(timespec="seconds"),
+        "replaying_existing_traces": bool(args.trace),
+        "trace_directory": os.path.abspath(traces_sim_folder),
+        "nGnb": nGnb,
+        "nUEs": nUEs,
+        "scenario_file": os.path.abspath(sc),
+        "waypoints_file": os.path.abspath(args.wp) if args.wp else None,
+        "parameters": {
+            "simTime": simTime, "seed": seed, "interval": interval,
+            "nUEs": nUEs, "Hys": Hys, "A3Offset": A3Offset,
+            "ttt": args.ttt, "NrMeasureInt": NrMeasureInt,
+            "HOInterval": HOInterval, "alpha": alpha, "beta": beta,
+            "speed": speed, "trayectoryTime": trayectoryTime,
+            "packetSize": packetSize, "bitRate": bitRate,
+            "MaxPackets": max_packets, "errorModel": errorModel,
+            "tolerance": tolerance, "ddqnEpisodes": args.ddqnEpisodes,
+            "ddqnTimeLimit": args.ddqnTimeLimit,
+        },
+        "algorithms": ["3GPP_A3", "3GPP_REL16_CHO", "SBGH", "ideal-SBGH", "DDQN"],
+        "input_snapshots": str(input_snapshot_dir),
+    }
+    with open(Path(traces_sim_folder) / "experiment.json", "w", encoding="utf-8") as manifest_file:
+        json.dump(experiment_manifest, manifest_file, indent=2)
     
     simDataframes = load_dataframes(traces_sim_folder, nUEs, nGnb)
     intervals = simDataframes[0][0]['Time'].unique()
@@ -495,8 +568,28 @@ if __name__ == "__main__":
     #plot all the throughput for each user
     #plot_throughput(simDataframes, nUEs, nGnb, traces_sim_folder)
     #plot_rsrp(simDataframes, nUEs, nGnb, traces_sim_folder)
-    simulate_3gpp_handover(nUEs, debug, traces_sim_folder, nGnb, Hys, A3Offset, NrMeasureInt, interval, DECISION_PARAMETER, timeToTrigger, HOInterval, intervals, simDataframes, scenario, packetSize, penalty_dict)
-    simulate_3gpp_cho_handover(nUEs, debug, traces_sim_folder, nGnb, Hys, A3Offset, NrMeasureInt, interval, DECISION_PARAMETER, timeToTrigger, HOInterval, intervals, simDataframes, scenario, packetSize, penalty_dict, bands)
-    simulate_sbgh_handover(nUEs,debug,traces_sim_folder, nGnb, interval ,simDataframes ,intervals ,scenario, packetSize, alpha, beta, penalty_dict, HOInterval)
-    simulate_ideal_sbgh_handover(nUEs,debug,traces_sim_folder, nGnb, interval ,simDataframes ,intervals ,scenario, packetSize, alpha, beta, penalty_dict, HOInterval)
-    simulate_gti_dqn_handover(nUEs,debug,traces_sim_folder, nGnb, interval ,simDataframes ,intervals ,scenario, packetSize,penalty_dict, HOInterval)
+    algorithm_runs = [
+        ("3GPP_A3", lambda: simulate_3gpp_handover(nUEs, debug, traces_sim_folder, nGnb, Hys, A3Offset, NrMeasureInt, interval, DECISION_PARAMETER, timeToTrigger, HOInterval, intervals, simDataframes, scenario, packetSize, penalty_dict)),
+        ("3GPP_REL16_CHO", lambda: simulate_3gpp_cho_handover(nUEs, debug, traces_sim_folder, nGnb, Hys, A3Offset, NrMeasureInt, interval, DECISION_PARAMETER, timeToTrigger, HOInterval, intervals, simDataframes, scenario, packetSize, penalty_dict, bands)),
+        ("SBGH", lambda: simulate_sbgh_handover(nUEs, debug, traces_sim_folder, nGnb, interval, simDataframes, intervals, scenario, packetSize, alpha, beta, penalty_dict, HOInterval)),
+        ("ideal-SBGH", lambda: simulate_ideal_sbgh_handover(nUEs, debug, traces_sim_folder, nGnb, interval, simDataframes, intervals, scenario, packetSize, alpha, beta, penalty_dict, HOInterval)),
+        ("DDQN", lambda: simulate_gti_dqn_handover(nUEs, debug, traces_sim_folder, nGnb, interval, simDataframes, intervals, scenario, packetSize, penalty_dict, HOInterval, args.ddqnEpisodes, args.ddqnTimeLimit)),
+    ]
+    algorithm_errors = {}
+    for algorithm_name, algorithm_run in algorithm_runs:
+        print(f"Starting algorithm: {algorithm_name}", flush=True)
+        try:
+            algorithm_run()
+            print(f"Completed algorithm: {algorithm_name}", flush=True)
+        except Exception as exc:
+            algorithm_errors[algorithm_name] = f"{type(exc).__name__}: {exc}"
+            logging.exception("Algorithm %s failed", algorithm_name)
+
+    from report_generator import generate_run_reports
+    report_files = generate_run_reports(traces_sim_folder, experiment_manifest, algorithm_errors, Path(traces_sim_folder) / "run.log")
+    print(f"Run status: {report_files['status']}", flush=True)
+    print(f"Final PDF report: {report_files['report']}", flush=True)
+    print(f"Algorithm performance PDF: {report_files['performance']}", flush=True)
+    print(f"Algorithm comparison CSV: {report_files['summary']}", flush=True)
+    if algorithm_errors:
+        raise RuntimeError(f"One or more algorithms failed; see run.log and run_status.json: {algorithm_errors}")

@@ -17,3 +17,6 @@ services:
     stdin_open: true
     volumes:
       - ./handover-simulator/src:/app/handover-simulator/src
+      - ./handover-simulator/scenario:/app/handover-simulator/scenario:ro
+      - ./handover-simulator/waypoints:/app/handover-simulator/waypoints:ro
+      - ./handover-simulator/traces:/app/handover-simulator/traces

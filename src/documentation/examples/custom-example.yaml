@@ -1,0 +1,25 @@
+# Uses the scenario and waypoint examples beside this file.
+# Run from /app/handover-simulator/src inside the container.
+simTime: 5
+nUEs: 2
+seed: 42
+speed: 1.5
+trayectoryTime: 5.0
+int: 0.1
+sc: /app/documentation/examples/scenario-example.txt
+wp: /app/documentation/examples/waypoints-example.txt
+Hys: 5.0
+A3Offset: 3.0
+ttt: 0.1
+NrMeasureInt: 0.1
+HOInterval: 0.1
+alpha: 5000.0
+beta: 1000.0
+packetSize: 1000
+bitRate: 380000000
+MaxPackets: 0
+errorModel: ns3::NrEesmCcT1
+tolerance: 1.0
+logging: 0
+ddqnEpisodes: 5
+ddqnTimeLimit: 120

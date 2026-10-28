@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+import time
 import simulator_common
 from scoring import calculate_algorithm_score
 
@@ -23,7 +24,7 @@ os.environ["KERAS_BACKEND"] = "jax"
 ALGORITHM = "DDQN"
 
 
-def simulate_gti_dqn_handover(nUEs=False,debug=False,traces_sim_folder=str, nGnbs=int, interval=float ,simDataframes=None ,intervals=None ,scenario=None, packetSize=int, penalty_dict=None, penalty_time=0.1):
+def simulate_gti_dqn_handover(nUEs=False,debug=False,traces_sim_folder=str, nGnbs=int, interval=float ,simDataframes=None ,intervals=None ,scenario=None, packetSize=int, penalty_dict=None, penalty_time=0.1, max_episodes=5, time_limit_seconds=120.0):
     # create result folder if not exists
     result_folder_path = traces_sim_folder + "/results"
     print(result_folder_path)
@@ -49,14 +50,24 @@ def simulate_gti_dqn_handover(nUEs=False,debug=False,traces_sim_folder=str, nGnb
         rewards = []
         traces = []
         thr_episode_list = []
-        
-        for e in range(900):
+        training_started = time.monotonic()
+        stop_reason = "episode_limit"
+        max_episodes = max(1, int(max_episodes))
+        time_limit_seconds = max(0.0, float(time_limit_seconds))
+        episodes_completed = 0
+
+        for e in range(max_episodes):
 
             env.reset()
             episode_rewards = [[] for _ in range(nUEs)]
             episode_traces = []
+            time_limit_reached = False
 
             for i,_ in enumerate(intervals):
+                if time_limit_seconds and time.monotonic() - training_started >= time_limit_seconds:
+                    stop_reason = "time_limit"
+                    time_limit_reached = True
+                    break
                 # Initialize lists for observations, actions and next observations
                 observations, actions, next_observations = [], [], []
 
@@ -98,15 +109,42 @@ def simulate_gti_dqn_handover(nUEs=False,debug=False,traces_sim_folder=str, nGnb
                     if done:
                         env.reset()
                         break
-            episode_mean_reward = np.mean([np.mean(rewards) for rewards in episode_rewards])
-            print(f"Episode {e} - Interval {i} - Mean Reward: {episode_mean_reward}")
-            rewards.append(episode_mean_reward)
+            nonempty_rewards = [np.mean(ue_rewards) for ue_rewards in episode_rewards if ue_rewards]
+            episode_mean_reward = float(np.mean(nonempty_rewards)) if nonempty_rewards else float("nan")
+            if nonempty_rewards:
+                rewards.append(episode_mean_reward)
+                episodes_completed += 1
+            elapsed = time.monotonic() - training_started
+            bar_width = 24
+            progress = min(1.0, (e + 1) / max_episodes)
+            filled = int(bar_width * progress)
+            bar = "#" * filled + "-" * (bar_width - filled)
+            print(f"DDQN training [{bar}] {e + 1}/{max_episodes} episodes | elapsed {elapsed:.1f}s | interval {i + 1}/{len(intervals)} | mean reward {episode_mean_reward:.6g}", flush=True)
             # save model
             if not os.path.exists(f"{result_folder_path}/train_results"):
                 os.makedirs(f"{result_folder_path}/train_results")
                 
-            thr_episode = np.mean([sum(interval[ue]["Throughput"] for ue in range(nUEs)) for interval in episode_traces])
+            thr_episode = np.mean([sum(interval[ue]["Throughput"] for ue in range(nUEs)) for interval in episode_traces]) if episode_traces else float("nan")
             thr_episode_list.append(thr_episode)
+            if time_limit_reached:
+                break
+            if time_limit_seconds and time.monotonic() - training_started >= time_limit_seconds:
+                stop_reason = "time_limit"
+                break
+
+        training_elapsed = time.monotonic() - training_started
+        training_summary = {
+            "requested_episodes": max_episodes,
+            "completed_or_partial_episodes": episodes_completed,
+            "time_limit_seconds": time_limit_seconds,
+            "elapsed_seconds": round(training_elapsed, 3),
+            "stop_reason": stop_reason,
+            "reward_history": rewards,
+        }
+        with open(os.path.join(result_folder_path, "ddqn_training.json"), "w", encoding="utf-8") as training_file:
+            import json
+            json.dump(training_summary, training_file, indent=2)
+        print(f"DDQN training finished: {episodes_completed} episode(s) recorded in {training_elapsed:.1f}s ({stop_reason}).", flush=True)
         for ue_id in range(nUEs):
             agents[ue_id].policy_net.save_weights(f"{result_folder_path}/train_results/agent_model_{ue_id}.weights.h5")
             agents[ue_id].target_net.save_weights(f"{result_folder_path}/train_results/agent_target_model_{ue_id}.weights.h5")
