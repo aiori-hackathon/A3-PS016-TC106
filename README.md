@@ -49,13 +49,22 @@ Watch the team introduction video using the link below:
 
 🎥 **[Watch Team Introduction Video on YouTube](https://youtu.be/EAUCb3XLsi8?si=eo38xh0ZA4i9q48R)**
 
-(If YouTube Link is not working, video is in src folder)
+(If YouTube Link is not working, video is in the repo - low quality)
+
+### 3. Final Project Demonstration Video
+
+Watch the final project demonstration video using the link below:
+
+🎥 **[Watch Final Project Demonstration Video on YouTube](https://youtu.be/NRT5OSP-eOY)**
+
+(If YouTube Link is not working, video is in the repo - low quality)
+
 ---
 
 ## Development Progress
 
-* **Completed Steps:** 1–7
-* **Last Updated:** 13 October 2026
+* **Completed Steps:** 1–10
+* **Last Updated:** 30 October 2026
 
 ---
 
