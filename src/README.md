@@ -58,6 +58,5 @@ Training duration is configurable; few episodes are useful for a smoke run, not 
 - [Troubleshooting](documentation/troubleshooting.md)
 - [RFC-2330 security and privacy notes](documentation/security-and-rfc2330.md)
 - [Project final report](FINAL_REPORT.md)
-- [Video presentation script](documentation/video-script.md)
 
 The generated comparisons describe the saved run. The simulator does not itself establish statistical significance, a standardized reliability score, or measured handover interruption duration. The final report identifies these limits and distinguishes simulation results from live network measurements.

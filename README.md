@@ -14,6 +14,7 @@ This repository contains the source code, documentation, and other resources for
 | **Problem Statement ID**       | PS-016                                                                |
 | **Problem Statement Title**    | Simulation-Based Handover Decision Evaluation for High-Mobility Users |
 | **Problem Statement Category** | 6G & Future Networks                                                  |
+| **Product (Project Name)**     | HandoverLab 5G                                                        |
 
 ---
 
@@ -97,4 +98,3 @@ docker run -it yourusername/5g-handover-sim:latest
 ---
 
 *Developed by Team GRIDLOCK for the AIORI-3 Hackathon 2026.*
----
