@@ -61,7 +61,7 @@ Watch the final project demonstration video using the link below:
 
 ### 4. 🚀 Quick Start (Using Pre-built Image)
 
-If you want to run the simulation without building from the source code(zero installation time required), you can pull the pre-built image directly from Docker Hub.
+If you want to run the simulation without building from the source code (zero installation time required), you can pull the pre-built image directly from Docker Hub.
 
 ## Pull the latest image
 
@@ -78,7 +78,7 @@ docker images
 ## Start an interactive container session
 
 ```bash
-docker run -it yourusername/5g-handover-sim:latest
+docker run -it razorsharp571/5g-handover-sim:latest
 ```
 
 ---
