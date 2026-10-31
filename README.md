@@ -59,6 +59,28 @@ Watch the final project demonstration video using the link below:
 
 (If YouTube Link is not working, video is in the repo - low quality)
 
+### 4. 🚀 Quick Start (Using Pre-built Image)
+
+If you want to run the simulation without building from the source code(zero installation time required), you can pull the pre-built image directly from Docker Hub.
+
+## Pull the latest image
+
+```bash
+docker pull razorsharp571/5g-handover-sim:latest
+```
+
+## Verify the downloaded image
+
+```bash
+docker images
+```
+
+## Start an interactive container session
+
+```bash
+docker run -it yourusername/5g-handover-sim:latest
+```
+
 ---
 
 ## Development Progress
@@ -75,3 +97,4 @@ Watch the final project demonstration video using the link below:
 ---
 
 *Developed by Team GRIDLOCK for the AIORI-3 Hackathon 2026.*
+---
