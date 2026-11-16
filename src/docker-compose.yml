@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   simulator:
     build: 
@@ -16,6 +14,7 @@ services:
     tty: true
     stdin_open: true
     volumes:
+      - ./network-simulator:/app/network-simulator:ro
       - ./handover-simulator/src:/app/handover-simulator/src
       - ./handover-simulator/scenario:/app/handover-simulator/scenario:ro
       - ./handover-simulator/waypoints:/app/handover-simulator/waypoints:ro

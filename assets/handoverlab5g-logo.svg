@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" role="img" aria-labelledby="title desc">
+  <title id="title">HandoverLab 5G</title>
+  <desc id="desc">A 5G cell handover network icon and HandoverLab 5G wordmark.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1830"/>
+      <stop offset="1" stop-color="#142c48"/>
+    </linearGradient>
+    <linearGradient id="cyan" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#38d6d0"/>
+      <stop offset="1" stop-color="#70b9ff"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect x="8" y="8" width="1184" height="304" rx="34" fill="url(#bg)"/>
+  <path d="M207 200 C245 121 315 121 354 200" fill="none" stroke="#315779" stroke-width="4" stroke-dasharray="8 10"/>
+  <path d="M190 179 C244 72 318 72 371 179" fill="none" stroke="#315779" stroke-width="3" stroke-dasharray="7 11"/>
+  <path d="M141 255 L181 120 L221 255 M155 208 H207 M165 172 H196 M181 120 V258" fill="none" stroke="url(#cyan)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M326 250 V205" stroke="#ffbf69" stroke-width="7" stroke-linecap="round"/>
+  <rect x="311" y="174" width="30" height="58" rx="8" fill="#ffbf69" stroke="#fff2d8" stroke-width="2"/>
+  <circle cx="326" cy="218" r="4" fill="#142c48"/>
+  <path d="M242 262 C268 233 294 219 319 211" fill="none" stroke="#ffbf69" stroke-width="4" stroke-linecap="round"/>
+  <path d="M304 201 L323 210 L307 224" fill="none" stroke="#ffbf69" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="181" cy="120" r="8" fill="#7ce8e1" filter="url(#glow)"/>
+  <circle cx="326" cy="174" r="7" fill="#ffe1ae" filter="url(#glow)"/>
+  <text x="425" y="157" fill="#f5f9ff" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="62" font-weight="750" letter-spacing="1">HandoverLab</text>
+  <text x="1005" y="157" fill="#61d8d1" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="64" font-weight="800">5G</text>
+  <text x="429" y="208" fill="#b9cce0" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="22" font-weight="500" letter-spacing="3">SIMULATE · EVALUATE · COMPARE</text>
+  <rect x="429" y="234" width="112" height="4" rx="2" fill="#61d8d1"/>
+  <text x="429" y="274" fill="#89a6c3" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="18">AIORI-3 · PS-016 · TEAM GRIDLOCK</text>
+</svg>
